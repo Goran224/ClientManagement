@@ -10,7 +10,6 @@ namespace ClientShared
     {
         public const string NameNullOrEmpty = "Name cannot be empty or null.";
         public const string HomeAddressNull = "HomeAddress cannot be null.";
-        public const string WeekendAddressNull = "WeekendAddress cannot be null.";
         public const string AddressNotSpecified = "Address not specified";
     }
 }
