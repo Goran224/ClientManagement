@@ -1,0 +1,57 @@
+﻿@using ClientAppCore.Enums
+@using ClientAppCore.Models
+@model ClientDto
+
+<h2>Edit Client</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" required pattern="[a-zA-Z\s]+" title="Please enter a valid name (only letters)" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BirthDate"></label>
+        <input asp-for="BirthDate" class="form-control" required pattern="\d{4}-\d{2}-\d{2}" title="Please enter a valid date in the format YYYY-MM-DD" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <h3>Home Address</h3>
+    @for (var i = 0; i < Model.Addresses.Count; i++)
+    {
+        if (Model.Addresses[i].Type == AddressType.HomeAddress)
+        {
+            <div class="form-group">
+                <label>Street</label>
+                <input type="text" class="form-control" name="Addresses[@i].Street" value="@Model.Addresses[i].Street" required />
+                <input type="hidden" name="Addresses[@i].Type" value="@AddressType.HomeAddress" />
+                <span asp-validation-for="Addresses[@i].Street" class="text-danger"></span>
+            </div>
+        }
+    }
+
+    <h3>Vacation Address</h3>
+    @if (!Model.Addresses.Any(a => a.Type == AddressType.VacayAddress))
+    {
+        <div class="form-group">
+            <label>Street</label>
+            <input type="text" class="form-control" name="Addresses[1].Street" />
+            <input type="hidden" name="Addresses[1].Type" value="@AddressType.VacayAddress" />
+        </div>
+    }
+    else
+    {
+        foreach (var address in Model.Addresses.Where(a => a.Type == AddressType.VacayAddress))
+        {
+            <div class="form-group">
+                <label>Street</label>
+                <input type="text" class="form-control" name="Addresses[@Model.Addresses.IndexOf(address)].Street" value="@address.Street" />
+            </div>
+        }
+    }
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

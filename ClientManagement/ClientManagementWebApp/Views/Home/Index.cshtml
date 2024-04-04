@@ -1,0 +1,116 @@
+﻿@model ClientManagementWebApp.Models.ClientListViewModel
+
+<style>
+    /* Basic styling for buttons */
+    .action-buttons {
+        margin-top: 10px;
+    }
+
+    .export-button {
+        margin-left: 10px;
+    }
+
+    .buttons-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+
+    .pagination-container {
+        margin-top: 20px;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+
+        .pagination li {
+            margin-right: 5px;
+        }
+
+            .pagination li.active {
+                font-weight: bold;
+            }
+</style>
+<h2>Clients</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Birth Date</th>
+            <th>Home Address</th>
+            <th>Vacay Address</th>
+            <!-- Add other columns as needed -->
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (@Model.Clients != null)
+{
+
+        @foreach (var client in @Model.Clients)
+        {
+            <tr>
+                <td>@client.Name</td>
+                <td>@client.BirthDate.ToString("MM/dd/yyyy")</td>
+                <td>
+                    @foreach (var address in client.Addresses)
+                    {
+                        @if (address.Type == ClientAppCore.Enums.AddressType.HomeAddress)
+                        {
+                            <p>@address.Street</p>
+                        }
+                    }
+                </td>
+                <td>
+                    @foreach (var address in client.Addresses)
+                    {
+                        @if (address.Type == ClientAppCore.Enums.AddressType.VacayAddress)
+                        {
+                            <p>@address.Street</p>
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditView" asp-route-id="@client.Id">Edit</a>
+                </td>
+            </tr>
+        }
+        }
+    </tbody>
+</table>
+
+
+<div class="buttons-container">
+
+    <div class="action-buttons">
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </div>
+    <div class="action-buttons">
+        @if (Model.Clients.Count > 0)
+        {
+            var serializedModel = Json.Serialize(Model.Clients); // Serialize the model
+            var encodedModel = System.Web.HttpUtility.HtmlEncode(serializedModel); // Encode for HTML attribute
+            <form asp-action="Export" method="post">
+                <button type="submit" class="btn btn-success export-button">Export</button>
+                <input type="hidden" name="model" value="@encodedModel" /> 
+            </form>
+        }
+    </div>
+
+</div>
+
+<!-- Pagination -->
+<div class="pagination-container">
+    <ul class="pagination">
+        @for (int i = 1; i <= @Model.TotalPages; i++)
+        {
+            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                <a class="page-link" href="?pageNumber=@i">@i</a>
+            </li>
+        }
+    </ul>
+</div>
+
